@@ -1,0 +1,139 @@
+* {
+    padding: 0;
+    margin: 0;
+    border: none;
+    text-align: center;
+}
+.mainboard {
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+    margin-top: 30px;
+    position: relative;
+}
+#setup {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    top: 136px;
+    left: 136px;
+    border: 14px solid rgba(0, 0, 0, 0.9);
+    border-radius: 100%;
+    background: rgb(210, 210, 210);
+    z-index: 2;
+}
+.cells {
+    width: 250px;
+    height: 250px;
+    float: left;
+    position: relative;
+    background: black;
+    opacity: 0.9;
+}
+.outc1 {
+    border-top-left-radius: 100%;
+}
+.outc2 {
+    border-top-right-radius: 100%;
+}
+.outc3 {
+    border-bottom-left-radius: 100%;
+}
+.outc4 {
+    border-bottom-right-radius: 100%;
+}
+#c1, #c2, #c3, #c4 {
+    width: 208px;
+    height: 208px;
+    border-radius: inherit;
+    position: absolute;
+    opacity: 0.7;
+    box-shadow: 0 0 5px 0 grey;
+}
+#c1 {
+    background: green;
+    top: 28px;
+    left: 28px;
+}
+#c2 {
+    background: red;
+    top: 28px;
+    left: 14px;
+}
+#c3 {
+    background: yellow;
+    top: 14px;
+    left: 28px;
+}
+#c4 {
+    background: blue;
+    top: 14px;
+    right: 28px;
+}
+#counter, #period {
+    width: 50px;
+    height: 30px;
+    border: 3px solid black;
+    border-radius: 10px;
+    margin: 0 auto;
+    background: #66231a;
+    font-size: 26px;
+    color: #ffce9b;
+    font-family: 'Rye', cursive;
+}
+#title {
+    font-size: 40px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+span.sign {
+    font-size: 15px;
+    vertical-align: super;
+}
+.half {
+    width: 78px;
+    height: 95px;
+    /*border: 1px solid red;*/
+    float: left;
+}
+#startgame, #strictmode {
+    background: rgb(224, 110, 31);
+    height: 16px;
+    width: 16px;
+    box-shadow: 0 0 5px 0 grey;
+}
+#strictmode {
+    background: grey;
+}
+#startgame:active {
+    background: orange;
+}
+.but {
+    margin: 0 auto;
+    height: 18px;
+    width: 36px;
+    background: black;
+    border-radius: 2px;
+    position: relative;
+}
+.inbut {
+    background: grey;
+    height: 14px;
+    width: 15px;
+    border-radius: 1px;
+    position: absolute;
+    top: 2px;
+    left: 19px;
+}
+.onoff {
+    width: 100px;
+    vertical-align: super;
+    clear: both;
+    margin: 0 auto;
+}
+.martb {
+    margin: 1px 0;
+}
+.marl {
+    margin-left: 20px;
+}

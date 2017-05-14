@@ -20831,9 +20831,100 @@ var Game = function (_React$Component) {
         key: "render",
         value: function render() {
             return _react2.default.createElement(
-                "p",
-                null,
-                "Example"
+                "div",
+                { className: "mainboard" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "outc1 cells" },
+                    _react2.default.createElement("div", { id: "c1", className: "" })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "outc2 cells" },
+                    _react2.default.createElement("div", { id: "c2", className: "" })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "outc3 cells" },
+                    _react2.default.createElement("div", { id: "c3", className: "" })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "outc4 cells" },
+                    _react2.default.createElement("div", { id: "c4", className: "" })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { id: "setup" },
+                    _react2.default.createElement(
+                        "div",
+                        null,
+                        _react2.default.createElement(
+                            "div",
+                            { id: "title" },
+                            "Simon",
+                            _react2.default.createElement(
+                                "span",
+                                { className: "sign" },
+                                "\xAE"
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "half marl" },
+                            _react2.default.createElement(
+                                "div",
+                                { id: "counter" },
+                                "--"
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "martb" },
+                                "count"
+                            ),
+                            _react2.default.createElement("div", { id: "startgame", className: "but" }),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "martb" },
+                                "start"
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "half" },
+                            _react2.default.createElement(
+                                "div",
+                                { id: "period" },
+                                "--"
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "martb" },
+                                "time"
+                            ),
+                            _react2.default.createElement("div", { id: "strictmode", className: "but" }),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "martb" },
+                                "strict"
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "onoff" },
+                        _react2.default.createElement(
+                            "div",
+                            { className: "but" },
+                            _react2.default.createElement("div", { className: "inbut" })
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            null,
+                            "on / off"
+                        )
+                    )
+                )
             );
         }
     }]);
@@ -20842,6 +20933,14 @@ var Game = function (_React$Component) {
 }(_react2.default.Component);
 
 module.exports = Game;
+
+/*<div className="onoff">
+    <span className="onoff">on</span>
+    <div className="but">
+        <div className="inbut">!</div>
+    </div> off
+</div>*/
+//<div id="setup"></div>
 
 },{"react":181}],183:[function(require,module,exports){
 "use strict";
