@@ -20824,104 +20824,269 @@ var Game = function (_React$Component) {
     function Game(props) {
         _classCallCheck(this, Game);
 
-        return _possibleConstructorReturn(this, (Game.__proto__ || Object.getPrototypeOf(Game)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (Game.__proto__ || Object.getPrototypeOf(Game)).call(this, props));
+
+        _this.power = false;
+        _this.strictm = false;
+        _this.count = "-";
+        _this.timer = "-";
+        _this.wincom = [];
+        _this.answers = 0;
+        _this.st_id = [];
+        _this.switchGame = _this.switchGame.bind(_this);
+        _this.selectStrict = _this.selectStrict.bind(_this);
+        _this.startGame = _this.startGame.bind(_this);
+        _this.showCombi = _this.showCombi.bind(_this);
+        _this.selectCell = _this.selectCell.bind(_this);
+        _this.reset = _this.reset.bind(_this);
+        return _this;
     }
 
     _createClass(Game, [{
+        key: "init",
+        value: function init() {
+            this.count = "-";
+            this.timer = "-";
+            this.wincom = [];
+            this.answers = 0;
+        }
+    }, {
+        key: "switchGame",
+        value: function switchGame() {
+            var butStyle = document.getElementById('switch').classList;
+            if (!this.power) {
+                butStyle.add('switchon');
+                this.power = true;
+            } else {
+                butStyle.remove('switchon');
+                this.power = false;
+                this.strictm = false;
+                document.getElementById('strictmode').classList.remove('stricton');
+                this.reset();
+            }
+            this.setState({});
+        }
+    }, {
+        key: "selectStrict",
+        value: function selectStrict() {
+            var butStyle = document.getElementById('strictmode').classList;
+            if (!this.strictm && this.power) {
+                butStyle.add('stricton');
+                this.strictm = true;
+            } else {
+                butStyle.remove('stricton');
+                this.strictm = false;
+            }
+        }
+    }, {
+        key: "startGame",
+        value: function startGame() {
+            if (this.power) {
+                this.reset();
+                document.getElementById('waiting').classList.add('unavailable');
+                setTimeout(this.showCombi, 1000);
+            }
+            this.setState({});
+        }
+    }, {
+        key: "showCombi",
+        value: function showCombi() {
+            var comb = this.wincom,
+                st_id = [];
+            this.answers = 0;
+            if (this.count === "-") {
+                comb.push((Math.floor(Math.random() * 4) + 1).toString());
+                this.count = 1;
+            }
+
+            var _loop = function _loop() {
+                var cell = 'c' + comb[i];
+                delay = i * 1600;
+                lightShow = setTimeout(function () {
+                    document.getElementById(cell).classList.add('light');
+                }, delay);
+                lightHide = setTimeout(function () {
+                    document.getElementById(cell).classList.remove('light');
+                }, delay + 800);
+
+                st_id.push(lightShow, lightHide);
+            };
+
+            for (var i = 0; i < comb.length; i += 1) {
+                var delay;
+                var lightShow;
+                var lightHide;
+
+                _loop();
+            }
+            st_id.push(setTimeout(function () {
+                document.getElementById('waiting').classList.remove('unavailable');
+            }, delay + 800));
+            this.st_id = st_id;
+            this.setState({});
+        }
+    }, {
+        key: "selectCell",
+        value: function selectCell(e) {
+            var cell = e.target.id;
+            this.answers += 1;
+            if (cell[1] !== this.wincom[this.answers - 1]) {
+                document.getElementById('waiting').classList.add('unavailable');
+                if (this.strictm) {
+                    this.init();
+                }
+                setTimeout(this.showCombi, 1000);
+            } else if (this.answers === this.count) {
+                document.getElementById('waiting').classList.add('unavailable');
+                this.wincom.push((Math.floor(Math.random() * 4) + 1).toString());
+                this.count += 1;
+                setTimeout(this.showCombi, 1000);
+            }
+            this.setState({});
+        }
+    }, {
+        key: "lightOn",
+        value: function lightOn(e) {
+            document.getElementById(e.target.id).classList.add('light');
+        }
+    }, {
+        key: "lightOff",
+        value: function lightOff(e) {
+            document.getElementById(e.target.id).classList.remove('light');
+        }
+    }, {
+        key: "reset",
+        value: function reset() {
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = this.st_id[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var id = _step.value;
+
+                    clearTimeout(id);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            ["c1", "c2", "c3", "c4"].forEach(function (a) {
+                return document.getElementById(a).classList.remove('light');
+            });
+            this.init();
+        }
+    }, {
         key: "render",
         value: function render() {
             return _react2.default.createElement(
                 "div",
-                { className: "mainboard" },
+                null,
                 _react2.default.createElement(
                     "div",
-                    { className: "outc1 cells" },
-                    _react2.default.createElement("div", { id: "c1", className: "" })
-                ),
-                _react2.default.createElement(
-                    "div",
-                    { className: "outc2 cells" },
-                    _react2.default.createElement("div", { id: "c2", className: "" })
-                ),
-                _react2.default.createElement(
-                    "div",
-                    { className: "outc3 cells" },
-                    _react2.default.createElement("div", { id: "c3", className: "" })
-                ),
-                _react2.default.createElement(
-                    "div",
-                    { className: "outc4 cells" },
-                    _react2.default.createElement("div", { id: "c4", className: "" })
-                ),
-                _react2.default.createElement(
-                    "div",
-                    { id: "setup" },
+                    { className: "mainboard" },
                     _react2.default.createElement(
                         "div",
-                        null,
-                        _react2.default.createElement(
-                            "div",
-                            { id: "title" },
-                            "Simon",
-                            _react2.default.createElement(
-                                "span",
-                                { className: "sign" },
-                                "\xAE"
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "half marl" },
-                            _react2.default.createElement(
-                                "div",
-                                { id: "counter" },
-                                "--"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "martb" },
-                                "count"
-                            ),
-                            _react2.default.createElement("div", { id: "startgame", className: "but" }),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "martb" },
-                                "start"
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "half" },
-                            _react2.default.createElement(
-                                "div",
-                                { id: "period" },
-                                "--"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "martb" },
-                                "time"
-                            ),
-                            _react2.default.createElement("div", { id: "strictmode", className: "but" }),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "martb" },
-                                "strict"
-                            )
-                        )
+                        { className: "outc1 cells" },
+                        _react2.default.createElement("div", { id: "c1", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.lightOn, onMouseUp: this.lightOff })
                     ),
                     _react2.default.createElement(
                         "div",
-                        { className: "onoff" },
-                        _react2.default.createElement(
-                            "div",
-                            { className: "but" },
-                            _react2.default.createElement("div", { className: "inbut" })
-                        ),
+                        { className: "outc2 cells" },
+                        _react2.default.createElement("div", { id: "c2", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.lightOn, onMouseUp: this.lightOff })
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "outc3 cells" },
+                        _react2.default.createElement("div", { id: "c3", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.lightOn, onMouseUp: this.lightOff })
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "outc4 cells" },
+                        _react2.default.createElement("div", { id: "c4", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.lightOn, onMouseUp: this.lightOff })
+                    ),
+                    _react2.default.createElement("div", { id: "waiting", className: "unavailable" }),
+                    _react2.default.createElement(
+                        "div",
+                        { id: "setup" },
                         _react2.default.createElement(
                             "div",
                             null,
-                            "on / off"
+                            _react2.default.createElement(
+                                "div",
+                                { id: "title" },
+                                "Simon",
+                                _react2.default.createElement(
+                                    "span",
+                                    { className: "sign" },
+                                    "\xAE"
+                                )
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "half marl" },
+                                _react2.default.createElement(
+                                    "div",
+                                    { id: "counter" },
+                                    this.count
+                                ),
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "btitle" },
+                                    "count"
+                                ),
+                                _react2.default.createElement("div", { id: "start", className: "but point", onClick: this.startGame }),
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "btitle" },
+                                    "start"
+                                )
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "half" },
+                                _react2.default.createElement(
+                                    "div",
+                                    { id: "period" },
+                                    this.timer
+                                ),
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "btitle" },
+                                    "time"
+                                ),
+                                _react2.default.createElement("div", { id: "strictmode", className: "but point", onClick: this.selectStrict }),
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "btitle" },
+                                    "strict"
+                                )
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "onoff" },
+                            _react2.default.createElement(
+                                "div",
+                                { className: "but point", onClick: this.switchGame },
+                                _react2.default.createElement("div", { id: "switch", className: "inbut" })
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "btitle" },
+                                "on / off"
+                            )
                         )
                     )
                 )
@@ -20933,14 +21098,6 @@ var Game = function (_React$Component) {
 }(_react2.default.Component);
 
 module.exports = Game;
-
-/*<div className="onoff">
-    <span className="onoff">on</span>
-    <div className="but">
-        <div className="inbut">!</div>
-    </div> off
-</div>*/
-//<div id="setup"></div>
 
 },{"react":181}],183:[function(require,module,exports){
 "use strict";
