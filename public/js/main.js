@@ -20829,15 +20829,31 @@ var Game = function (_React$Component) {
         _this.power = false;
         _this.strictm = false;
         _this.count = "-";
-        _this.timer = "-";
+        _this.timer = {
+            num: "-",
+            id: ""
+        };
+        _this.sounds = {
+            c1: "http://d.zaix.ru/3DG3.mp3",
+            c2: "http://d.zaix.ru/3DGD.mp3",
+            c3: "http://d.zaix.ru/3DG6.mp3",
+            c4: "http://d.zaix.ru/3DG9.mp3"
+        };
         _this.wincom = [];
         _this.answers = 0;
         _this.st_id = [];
+        _this.init = _this.init.bind(_this);
         _this.switchGame = _this.switchGame.bind(_this);
         _this.selectStrict = _this.selectStrict.bind(_this);
         _this.startGame = _this.startGame.bind(_this);
         _this.showCombi = _this.showCombi.bind(_this);
+        _this.startCounter = _this.startCounter.bind(_this);
         _this.selectCell = _this.selectCell.bind(_this);
+        _this.noteMistake = _this.noteMistake.bind(_this);
+        _this.lightOn = _this.lightOn.bind(_this);
+        _this.lightOff = _this.lightOff.bind(_this);
+        _this.turnOn = _this.turnOn.bind(_this);
+        _this.turnOff = _this.turnOff.bind(_this);
         _this.reset = _this.reset.bind(_this);
         return _this;
     }
@@ -20846,7 +20862,7 @@ var Game = function (_React$Component) {
         key: "init",
         value: function init() {
             this.count = "-";
-            this.timer = "-";
+            this.timer.num = "-";
             this.wincom = [];
             this.answers = 0;
         }
@@ -20891,9 +20907,11 @@ var Game = function (_React$Component) {
     }, {
         key: "showCombi",
         value: function showCombi() {
-            var comb = this.wincom,
-                st_id = [];
+            var _this2 = this;
+
+            var comb = this.wincom;
             this.answers = 0;
+            this.timer.num = "-";
             if (this.count === "-") {
                 comb.push((Math.floor(Math.random() * 4) + 1).toString());
                 this.count = 1;
@@ -20902,57 +20920,115 @@ var Game = function (_React$Component) {
             var _loop = function _loop() {
                 var cell = 'c' + comb[i];
                 delay = i * 1600;
-                lightShow = setTimeout(function () {
-                    document.getElementById(cell).classList.add('light');
-                }, delay);
-                lightHide = setTimeout(function () {
-                    document.getElementById(cell).classList.remove('light');
-                }, delay + 800);
 
-                st_id.push(lightShow, lightHide);
+                (function show(obj) {
+                    obj.st_id.push(setTimeout(function () {
+                        obj.lightOn(cell);
+                    }, delay));
+                    obj.st_id.push(setTimeout(function () {
+                        obj.lightOff(cell);
+                    }, delay + 1000));
+                })(_this2);
             };
 
             for (var i = 0; i < comb.length; i += 1) {
                 var delay;
-                var lightShow;
-                var lightHide;
 
                 _loop();
             }
-            st_id.push(setTimeout(function () {
+            this.st_id.push(setTimeout(function () {
                 document.getElementById('waiting').classList.remove('unavailable');
-            }, delay + 800));
-            this.st_id = st_id;
+            }, delay + 1000));
+            this.st_id.push(setTimeout(this.startCounter, delay + 1000));
             this.setState({});
+        }
+    }, {
+        key: "startCounter",
+        value: function startCounter() {
+            clearInterval(this.timer.id);
+            var cou = this.count;
+            this.timer.num = 5;
+            this.setState({});
+            (function subtractNum(obj) {
+                obj.timer.id = setInterval(function () {
+                    obj.timer.num -= 1;
+                    obj.setState({}, function () {
+                        if (obj.timer.num === 0) {
+                            clearInterval(obj.timer.id);
+                            obj.noteMistake();
+                        }
+                    });
+                }, 1000);
+                obj.st_id.push(obj.timer.id);
+            })(this);
         }
     }, {
         key: "selectCell",
         value: function selectCell(e) {
+            this.startCounter();
             var cell = e.target.id;
             this.answers += 1;
             if (cell[1] !== this.wincom[this.answers - 1]) {
                 document.getElementById('waiting').classList.add('unavailable');
-                if (this.strictm) {
-                    this.init();
-                }
-                setTimeout(this.showCombi, 1000);
+                clearInterval(this.timer.id);
+                this.noteMistake();
             } else if (this.answers === this.count) {
-                document.getElementById('waiting').classList.add('unavailable');
-                this.wincom.push((Math.floor(Math.random() * 4) + 1).toString());
-                this.count += 1;
-                setTimeout(this.showCombi, 1000);
+                clearInterval(this.timer.id);
+                if (this.count === 20) {
+                    document.getElementById('setup').insertAdjacentHTML('afterend', "<div id='winmess'><p class='message'>You win!</p><audio id='win' autoplay src='http://d.zaix.ru/3DG8.mp3'></audio></div>");
+                    document.getElementById('waiting').classList.add('unavailable');
+                    setTimeout(function () {
+                        document.getElementById('board').removeChild(document.getElementById('winmess'));
+                    }, 5000);
+                    this.st_id.push(setTimeout(this.startGame, 5000));
+                } else {
+                    clearInterval(this.timer.id);
+                    document.getElementById('waiting').classList.add('unavailable');
+                    this.wincom.push((Math.floor(Math.random() * 4) + 1).toString());
+                    this.count += 1;
+                    this.st_id.push(setTimeout(this.showCombi, 1000));
+                }
             }
             this.setState({});
         }
     }, {
+        key: "noteMistake",
+        value: function noteMistake() {
+            var prevCount = this.count;
+            this.count = "X";
+            this.timer.num = "X";
+            document.getElementById('setup').insertAdjacentHTML('afterend', "<audio id='error' autoplay src='http://d.zaix.ru/3DFQ.mp3'></audio>");
+            setTimeout(function () {
+                document.getElementById('board').removeChild(document.getElementById('error'));
+            }, 1000);
+            (function resumeGame(obj, prev) {
+                obj.st_id.push(setTimeout(function () {
+                    obj.strictm ? obj.init() : obj.count = prev;
+                }, 2000), setTimeout(obj.showCombi, 3000));
+            })(this, prevCount);
+            this.setState({});
+        }
+    }, {
         key: "lightOn",
-        value: function lightOn(e) {
-            document.getElementById(e.target.id).classList.add('light');
+        value: function lightOn(id) {
+            document.getElementById(id).classList.add('light');
+            document.getElementById("board").insertAdjacentHTML('beforeend', "<audio id=" + ("m" + id) + " autoplay src=" + this.sounds[id] + "></audio>");
         }
     }, {
         key: "lightOff",
-        value: function lightOff(e) {
-            document.getElementById(e.target.id).classList.remove('light');
+        value: function lightOff(id) {
+            document.getElementById(id).classList.remove('light');
+            document.getElementById("board").removeChild(document.getElementById("m" + id));
+        }
+    }, {
+        key: "turnOn",
+        value: function turnOn(e) {
+            this.lightOn(e.target.id);
+        }
+    }, {
+        key: "turnOff",
+        value: function turnOff(e) {
+            this.lightOff(e.target.id);
         }
     }, {
         key: "reset",
@@ -20982,9 +21058,35 @@ var Game = function (_React$Component) {
                 }
             }
 
+            this.st_id = [];
             ["c1", "c2", "c3", "c4"].forEach(function (a) {
-                return document.getElementById(a).classList.remove('light');
+                document.getElementById(a).classList.remove('light');
             });
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = document.getElementsByTagName("audio")[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var m = _step2.value;
+
+                    document.getElementById('board').removeChild(m);
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+
             this.init();
         }
     }, {
@@ -20992,101 +21094,97 @@ var Game = function (_React$Component) {
         value: function render() {
             return _react2.default.createElement(
                 "div",
-                null,
+                { id: "board", className: "mainboard" },
                 _react2.default.createElement(
                     "div",
-                    { className: "mainboard" },
+                    { className: "outc1 cells" },
+                    _react2.default.createElement("div", { id: "c1", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.turnOn, onMouseUp: this.turnOff })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "outc2 cells" },
+                    _react2.default.createElement("div", { id: "c2", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.turnOn, onMouseUp: this.turnOff })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "outc3 cells" },
+                    _react2.default.createElement("div", { id: "c3", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.turnOn, onMouseUp: this.turnOff })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "outc4 cells" },
+                    _react2.default.createElement("div", { id: "c4", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.turnOn, onMouseUp: this.turnOff })
+                ),
+                _react2.default.createElement("div", { id: "waiting", className: "unavailable" }),
+                _react2.default.createElement(
+                    "div",
+                    { id: "setup" },
                     _react2.default.createElement(
                         "div",
-                        { className: "outc1 cells" },
-                        _react2.default.createElement("div", { id: "c1", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.lightOn, onMouseUp: this.lightOff })
-                    ),
-                    _react2.default.createElement(
-                        "div",
-                        { className: "outc2 cells" },
-                        _react2.default.createElement("div", { id: "c2", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.lightOn, onMouseUp: this.lightOff })
-                    ),
-                    _react2.default.createElement(
-                        "div",
-                        { className: "outc3 cells" },
-                        _react2.default.createElement("div", { id: "c3", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.lightOn, onMouseUp: this.lightOff })
-                    ),
-                    _react2.default.createElement(
-                        "div",
-                        { className: "outc4 cells" },
-                        _react2.default.createElement("div", { id: "c4", className: "colorcell point", onClick: this.selectCell, onMouseDown: this.lightOn, onMouseUp: this.lightOff })
-                    ),
-                    _react2.default.createElement("div", { id: "waiting", className: "unavailable" }),
-                    _react2.default.createElement(
-                        "div",
-                        { id: "setup" },
+                        null,
                         _react2.default.createElement(
                             "div",
-                            null,
+                            { id: "title" },
+                            "Simon",
                             _react2.default.createElement(
-                                "div",
-                                { id: "title" },
-                                "Simon",
-                                _react2.default.createElement(
-                                    "span",
-                                    { className: "sign" },
-                                    "\xAE"
-                                )
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "half marl" },
-                                _react2.default.createElement(
-                                    "div",
-                                    { id: "counter" },
-                                    this.count
-                                ),
-                                _react2.default.createElement(
-                                    "div",
-                                    { className: "btitle" },
-                                    "count"
-                                ),
-                                _react2.default.createElement("div", { id: "start", className: "but point", onClick: this.startGame }),
-                                _react2.default.createElement(
-                                    "div",
-                                    { className: "btitle" },
-                                    "start"
-                                )
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "half" },
-                                _react2.default.createElement(
-                                    "div",
-                                    { id: "period" },
-                                    this.timer
-                                ),
-                                _react2.default.createElement(
-                                    "div",
-                                    { className: "btitle" },
-                                    "time"
-                                ),
-                                _react2.default.createElement("div", { id: "strictmode", className: "but point", onClick: this.selectStrict }),
-                                _react2.default.createElement(
-                                    "div",
-                                    { className: "btitle" },
-                                    "strict"
-                                )
+                                "span",
+                                { className: "sign" },
+                                "\xAE"
                             )
                         ),
                         _react2.default.createElement(
                             "div",
-                            { className: "onoff" },
+                            { className: "half marl" },
                             _react2.default.createElement(
                                 "div",
-                                { className: "but point", onClick: this.switchGame },
-                                _react2.default.createElement("div", { id: "switch", className: "inbut" })
+                                { id: "counter" },
+                                this.count
                             ),
                             _react2.default.createElement(
                                 "div",
                                 { className: "btitle" },
-                                "on / off"
+                                "count"
+                            ),
+                            _react2.default.createElement("div", { id: "start", className: "but point", onClick: this.startGame }),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "btitle" },
+                                "start"
                             )
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "half" },
+                            _react2.default.createElement(
+                                "div",
+                                { id: "period" },
+                                this.timer.num
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "btitle" },
+                                "time"
+                            ),
+                            _react2.default.createElement("div", { id: "strictmode", className: "but point", onClick: this.selectStrict }),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "btitle" },
+                                "strict"
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "div",
+                        { className: "onoff" },
+                        _react2.default.createElement(
+                            "div",
+                            { className: "but point", onClick: this.switchGame },
+                            _react2.default.createElement("div", { id: "switch", className: "inbut" })
+                        ),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "btitle" },
+                            "on / off"
                         )
                     )
                 )

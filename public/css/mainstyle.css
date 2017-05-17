@@ -13,7 +13,7 @@
     margin-top: 30px;
     position: relative;
 }
-#setup {
+#setup, #winmess {
     width: 200px;
     height: 200px;
     position: absolute;
@@ -23,6 +23,25 @@
     border-radius: 100%;
     background: rgb(220, 220, 220);
     z-index: 4;
+}
+@keyframes showwinmess {
+    0% {opacity: 0}
+    20% {opacity: 1}
+    80% {opacity: 1}
+    100% {opacity: 0}
+}
+#winmess {
+    z-index: 5;
+    opacity: 0;
+    background: indigo;
+    font-family: 'Cookie', cursive;
+    border-color: rgba(180, 180, 180, 0.9);
+    animation: showwinmess 5s linear;
+}
+p.message {
+    color: white;
+    font-size: 75px;
+    padding-top: 20px;
 }
 .cells {
     width: 250px;
